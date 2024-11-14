@@ -13,19 +13,28 @@ services:
       - LDAP_READONLY_USER_PASSWORD=readonlypw
       - LDAP_TLS_VERIFY_CLIENT=never
       - LDAP_REMOVE_CONFIG_AFTER_SETUP=false
-    command: "--copy-service"
+    command: "--copy-service --loglevel debug"
     volumes:
       - ldap_data:/var/lib/ldap
       - ldap_config:/etc/ldap/slapd.d
-      - ./bootstrap/ldif:/container/service/slapd/assets/config/bootstrap/ldif
     ports:
       - "389:389"
       - "636:636"
     networks:
       - ldap_network
 
+  ldap_init:
+    image: osixia/openldap:latest
+    volumes:
+      - ./init-ldap.sh:/init-ldap.sh
+    command: /init-ldap.sh
+    networks:
+      - ldap_network
+    depends_on:
+      - ldap
+
   lum:
-    image: wheelybird/ldap-user-manager:v1.11
+    build: .
     restart: unless-stopped
     environment:
       - SERVER_HOSTNAME=lum.my-domain.com
@@ -45,7 +54,7 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - ldap
+      - ldap_init
     networks:
       - ldap_network
 
