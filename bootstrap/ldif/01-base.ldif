@@ -1,0 +1,33 @@
+# Create people OU
+dn: ou=people,dc=my-domain,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: people
+
+# Create groups OU
+dn: ou=groups,dc=my-domain,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: groups
+
+# Create admin user in people OU
+dn: uid=admin,ou=people,dc=my-domain,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: admin
+cn: admin
+sn: admin
+uidNumber: 1000
+gidNumber: 1000
+homeDirectory: /home/admin
+loginShell: /bin/bash
+userPassword: adminpw
+
+# Create admins group
+dn: cn=admins,ou=groups,dc=my-domain,dc=com
+objectClass: posixGroup
+objectClass: top
+cn: admins
+gidNumber: 1000
+memberUid: admin
